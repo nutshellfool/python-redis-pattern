@@ -73,5 +73,28 @@ def redis_list_pop_command():
     return jsonify({'value': str(result, 'utf-8')})
 
 
+@app.route('/redis/geo/hash', methods=['GET'])
+def redis_geo_hash_command():
+    key = request.args.get('key')
+    member_name = request.args.get('member')
+    if None in {key, member_name}:
+        return jsonify({"message": "not a valid parameter"})
+    result = r.geohash(key, member_name)
+    return jsonify({"value": result})
+
+
+@app.route('/redis/geo/radius', methods=["GET"])
+def redis_geo_radius_command():
+    key = request.args.get('key')
+    longitude = request.args.get('lon')
+    latitude = request.args.get('lat')
+    nearby_distance = request.args.get('distance', 10000)
+
+    if None in {key, longitude, latitude}:
+        return jsonify({"message": "not a valid parameter"})
+    result = r.georadius(key, longitude, latitude, nearby_distance)
+    return jsonify({"value": result})
+
+
 if __name__ == '__main__':
     app.run()
