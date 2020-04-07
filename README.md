@@ -23,7 +23,6 @@ It is well-known that redis build-in data structures
 * Sorted Sets
 * Hashes
 * Bitmap(Bit arrays)
-* GEO
 * HyperLogLogs
 * Streams
 
