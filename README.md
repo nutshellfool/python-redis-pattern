@@ -65,6 +65,10 @@ So the distributed system usage will be the second main part
 
 #### lock
 
+* distributed lock (with lock timeout and acquire timeout)  
+    * get lock 
+    * release lock 
+
 ## Other topic
 
 ### Operation for redis
