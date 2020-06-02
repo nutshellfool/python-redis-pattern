@@ -1,0 +1,82 @@
+# For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection).
+#
+# Following HTTP Request Live Templates are available:
+# * 'gtrp' and 'gtr' create a GET request with or without query parameters;
+# * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
+# * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
+
+GET http://localhost:5000/
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/redis/echo
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+
+POST http://localhost:5000/redis/string/key
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"key":"foo","value":"bar"}
+
+###
+
+GET http://localhost:5000/redis/string/key/foo
+Accept: */*
+Cache-Control: no-cache
+#Content-Type: application/json
+
+###
+
+
+POST http://localhost:5000/redis/list/pop
+Accept: */*
+Cache-Control: no-cache
+Content-Type: application/json
+
+{"list_name": "l1", "value": 1, "head": "True"}
+
+
+###
+
+GET http://localhost:5000/redis/geo/hash?key=lib:test&member=nlc
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/redis/geo/radius?key=district:cn&lon=116.436753&lat=39.966599&distance=10000
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/redis/distributed/lock
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/redis/distributed/lock?lock_name=sku1&lock_timeout=10000
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/redis/distributed/unlock?lock_name=sku1
+Accept: */*
+Cache-Control: no-cache
+
+###
+
+GET http://localhost:5000/redis/distributed/unlock?lock_name=sku1&lock_id=f3ecff3a-27af-4927-b1ec-13326bb57220
+Accept: */*
+Cache-Control: no-cache
+
+###
