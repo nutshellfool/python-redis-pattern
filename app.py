@@ -30,12 +30,15 @@ def redis_echo_command():
 
 @app.route('/redis/string/key', methods=["POST"])
 def redis_string_set_command():
-    key = request.args.get('key')
-    value = request.args.get('value')
-    not_exist_update_only = request.args.get('nx', False)
-    exist_update_only = request.args.get('xx', False)
-    expire_in_seconds = request.args.get('ex', None)
-    expire_in_milli_seconds = request.args.get('px', None)
+    request_data = request.get_json()
+    if not request_data:
+        return "not valid post body"
+    key = request_data.get('key')
+    value = request_data.get('value')
+    not_exist_update_only = request_data.get('nx', False)
+    exist_update_only = request_data.get('xx', False)
+    expire_in_seconds = request_data.get('ex', None)
+    expire_in_milli_seconds = request_data.get('px', None)
 
     if not key or not value:
         return "not valid parameter"
@@ -45,18 +48,22 @@ def redis_string_set_command():
     return jsonify({"result": result})
 
 
-@app.route('/redis/string/key', methods=["GET"])
-def redis_string_get_command():
-    key = request.args.get('key')
+@app.route('/redis/string/key/<string:key>', methods=["GET"])
+def redis_string_get_command(key):
+    # key = request.args.get('key')
     result = r.get(key)
-    return jsonify({"result": result})
+    return jsonify({"result": result.decode('utf-8')})
 
 
 @app.route('/redis/list/append', methods=["POST"])
 def redis_list_append_command():
-    list_name = request.args.get('list_name')
-    value = request.args.get('value')
-    head = request.args.get('head', False)
+    request_data = request.get_json()
+    if not request_data:
+        return "not valid post body"
+
+    list_name = request_data.get('list_name')
+    value = request_data.get('value')
+    head = request_data.get('head', False)
 
     if None in {list_name, value}:
         return "not valid parameter"
@@ -67,6 +74,10 @@ def redis_list_append_command():
 
 @app.route('/redis/list/pop', methods=['POST'])
 def redis_list_pop_command():
+    request_data = request.get_json()
+    if not request_data:
+        return "not valid post body"
+
     list_name = request.args.get('list_name')
     value = request.args.get('value')
     head = request.args.get('head', False)
