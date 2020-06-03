@@ -151,12 +151,12 @@ def redis_distributed_unlock():
 def acquire_lock_with_timeout(
         conn, lockname, acquire_timeout=10, lock_timeout=10):
     identifier = str(uuid.uuid4())  # A
-    lockname = 'lock:' + lockname
+    _lock_name = 'lock:' + lockname
     lock_timeout = int(math.ceil(lock_timeout))  # D
 
     end = time.time() + acquire_timeout
     while time.time() < end:
-        if conn.set(lockname, identifier, ex=lock_timeout, nx=True):
+        if conn.set(_lock_name, identifier, ex=lock_timeout, nx=True):
             return identifier
 
         # the following code are equivalence with Directive:
@@ -178,17 +178,17 @@ def to_bytes(x):
     return x.encode() if isinstance(x, str) else x
 
 
-def release_lock(conn, lockname, identifier):
+def release_lock(conn, lock_name, identifier):
     pipe = conn.pipeline(True)
-    lockname = 'lock:' + lockname
+    _lock_name = 'lock:' + lock_name
     identifier = to_bytes(identifier)
 
     while True:
         try:
-            pipe.watch(lockname)  # A
-            if pipe.get(lockname) == identifier:  # A
+            pipe.watch(_lock_name)  # A
+            if pipe.get(_lock_name) == identifier:  # A
                 pipe.multi()  # B
-                pipe.delete(lockname)  # B
+                pipe.delete(_lock_name)  # B
                 pipe.execute()  # B
                 return True  # B
 
