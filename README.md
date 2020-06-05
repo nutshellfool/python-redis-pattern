@@ -41,13 +41,19 @@ So the distributed system usage will be the second main part
 
 #### Lists
 
+* news feed
+
 #### Sets
+
+* common friends
 
 #### Sorted Sets
 
 * leader board
 
 #### hashes
+
+* cache or save user data
 
 #### Bitmap
 
@@ -60,6 +66,8 @@ So the distributed system usage will be the second main part
 #### HyperLogLogs
 
 #### Streams
+
+* MessageQueue (producer - consumer model)
 
 ### distributed system usage
 
@@ -76,10 +84,24 @@ So the distributed system usage will be the second main part
 #### configuration
 
 * changing on fly
+    * Set configuration on fly (this will NOT rewrite redis.conf file)   
+    `CONFIG SET <key> <value>` 
+    * Get configuration
+    `CONFIG GET <key>`
+    * Rewrite configuration from config file
+    `CONFIG REWRITE`
 
 * configuring redis as a cache
+    * Set the `maxmemory`
+    The max memory can be used, take 200MB for example `maxmemory 200mb`
+    * Set the `maxmemory-policy`
+    The cache policy when max memory limit reached, take common LRU for example `maxmemory-policy allkeys-lru`
+    
+    After the above two configuration, there is no need to use `EXPIRE` to set the key time to live. 
 
-#### HA solution
+#### Cluster
+
+##### Replica (master-slave)
 
 ##### sentinel and why sentinel works
 
