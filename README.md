@@ -37,7 +37,7 @@ So the distributed system usage will be the second main part
 
 #### String
 
-* cache a side
+* cache aside
 
 #### Lists
 
