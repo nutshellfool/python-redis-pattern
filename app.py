@@ -7,9 +7,11 @@ import redis
 from flask import Flask
 from flask import jsonify
 from flask import request
+from redlock import Redlock, Lock, MultipleRedlockException
 
 app = Flask(__name__)
 r = redis.StrictRedis(host='localhost', port=6379, db=0)
+rl = Redlock([{"host": "localhost", "port": 6379, "db": 0}, ])
 
 
 @app.route('/')
@@ -199,6 +201,44 @@ def release_lock(conn, lock_name, identifier):
             pass  # C
 
     return False  # D
+
+
+@app.route('/redis/redlock/lock', methods=['GET'])
+def redlock_acquire():
+    lock_name = request.args.get('lock_name')
+    lock_timeout = request.args.get('lock_timeout')
+
+    if not lock_name:
+        return jsonify({'code': HTTPStatus.BAD_REQUEST.value,
+                        'message': 'lock_name required'})
+    if not lock_timeout:
+        lock_timeout = 10000
+
+    acquire_result = rl.lock(lock_name, lock_timeout)
+    if not acquire_result:
+        return jsonify({"message": "acquire lock fail (timeout)"})
+
+    return jsonify({"lock_name": acquire_result.resource,
+                    "lock_key": acquire_result.key.decode('utf-8'),
+                    "validity": str(acquire_result.validity)})
+
+
+@app.route('/redis/redlock/unlock', methods=['GET'])
+def redlock_release():
+    lock_name = request.args.get('lock_name')
+    lock_id = request.args.get('lock_key')
+    validity = request.args.get('validity')
+    if not (lock_name and lock_id and validity):
+        return jsonify({'code': HTTPStatus.BAD_REQUEST.value,
+                        'message': 'necessary parameter(s) required'})
+    release_result = True
+    try:
+        rl.unlock(
+            Lock(validity, lock_name, lock_id))
+    except MultipleRedlockException:
+        release_result = False
+
+    return jsonify({'code': HTTPStatus.OK.value, 'release': release_result})
 
 
 if __name__ == '__main__':
